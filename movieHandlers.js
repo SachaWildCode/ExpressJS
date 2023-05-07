@@ -1,30 +1,4 @@
 const database = require("./database");
-const movies = [
-  {
-    id: 1,
-    title: "Citizen Kane",
-    director: "Orson Wells",
-    year: "1941",
-    colors: false,
-    duration: 120,
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    director: "Francis Ford Coppola",
-    year: "1972",
-    colors: true,
-    duration: 180,
-  },
-  {
-    id: 3,
-    title: "Pulp Fiction",
-    director: "Quentin Tarantino",
-    year: "1994",
-    color: true,
-    duration: 180,
-  },
-];
 
 const getMovies = (req, res) => {
   database
@@ -56,7 +30,31 @@ const getMovieById = (req, res) => {
     });
 };
 
+const postMovie = (req, res) => {
+  const { title, director, year, duration } = req.body;
+
+  database
+    .query(
+      "INSERT INTO movies(title, director, year, duration) VALUES(?,?,?,?)",
+      [title, director, year, duration]
+    )
+    .then(([result]) => {
+      res.location(`/api/movies/${result.insertId}`).sendStatus(201);
+    })
+    .catch((err) => {
+      console.err(err);
+      res.status(500).send("Error saving the movies");
+    });
+};
+
 module.exports = {
   getMovies,
   getMovieById,
+  postMovie, // don't forget to export your function ;)
+};
+
+module.exports = {
+  getMovies,
+  getMovieById,
+  postMovie,
 };
